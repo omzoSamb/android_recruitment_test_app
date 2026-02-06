@@ -38,11 +38,22 @@ android {
     }
 
     dependencies {
+        implementation(project(":domain"))
+
         implementation(libs.retrofit.core)
         implementation(libs.retrofit.kotlin.serialization)
         implementation(libs.okhttp.logging)
 
         implementation(libs.kotlin.serialization.json)
+
+        implementation(libs.androidx.room.runtime)
+        implementation(libs.androidx.room.ktx)
+        ksp(libs.androidx.room.compiler)
+
+        implementation(libs.androidx.datastore.preferences)
+
+        implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.kotlinx.coroutines.android)
 
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit) // Useless dependency
