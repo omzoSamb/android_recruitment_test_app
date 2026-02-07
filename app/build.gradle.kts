@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "fr.leboncoin.androidrecruitmenttestapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "fr.leboncoin.androidrecruitmenttestapp"
@@ -58,6 +58,9 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.gson)
+
+
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -68,4 +71,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.leakcanary.android)
+
+
 }
