@@ -2,11 +2,13 @@ package fr.leboncoin.androidrecruitmenttestapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.ViewModelProvider
 import com.adevinta.spark.SparkTheme
+import com.google.gson.Gson
 import fr.leboncoin.androidrecruitmenttestapp.di.AppDependenciesProvider
 import fr.leboncoin.androidrecruitmenttestapp.ui.AlbumsScreen
 import fr.leboncoin.androidrecruitmenttestapp.utils.AnalyticsHelper
@@ -34,9 +36,14 @@ class MainActivity : ComponentActivity() {
             SparkTheme {
                 AlbumsScreen(
                     viewModel = viewModel,
-                    onItemSelected = {
-                        analyticsHelper.trackSelection(it.id.toString())
-                        startActivity(Intent(this, DetailsActivity::class.java))
+                    onItemSelected = { album ->
+                        val res = Gson().toJson(album)
+                        Log.d("TAG", "res: $res")
+                        analyticsHelper.trackSelection(album.id.toString())
+                        val intent = Intent(this, DetailsActivity::class.java).apply {
+                            putExtra("album", res)
+                        }
+                        startActivity(intent)
                     }
                 )
             }

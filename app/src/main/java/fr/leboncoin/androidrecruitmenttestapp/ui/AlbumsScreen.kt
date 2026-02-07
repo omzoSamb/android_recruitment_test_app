@@ -21,7 +21,7 @@ fun AlbumsScreen(
 ) {
     val albums by viewModel.albums.collectAsStateWithLifecycle(emptyList())
 
-    LaunchedEffect(Unit) { viewModel.loadAlbums() }
+    //LaunchedEffect(Unit) { viewModel.loadAlbums() }
 
     Scaffold(modifier = modifier) {
         LazyColumn(
