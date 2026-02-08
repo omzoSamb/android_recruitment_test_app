@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.adevinta.spark.SparkTheme
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import fr.leboncoin.androidrecruitmenttestapp.ui.AlbumsScreen
 
@@ -20,10 +19,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             SparkTheme {
                 AlbumsScreen(
-                    onItemSelected = { album ->
-                        val res = Gson().toJson(album)
+                    onAlbumClick = { albumId ->
                         val intent = Intent(this, DetailsActivity::class.java).apply {
-                            putExtra("album", res)
+                            putExtra("albumId", albumId)
                         }
                         startActivity(intent)
                     }

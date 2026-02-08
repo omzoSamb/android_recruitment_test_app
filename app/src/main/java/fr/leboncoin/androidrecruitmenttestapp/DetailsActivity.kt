@@ -3,16 +3,14 @@ package fr.leboncoin.androidrecruitmenttestapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import com.adevinta.spark.components.image.Illustration
-import com.google.gson.Gson
+import com.adevinta.spark.components.text.Text
 import dagger.hilt.android.AndroidEntryPoint
 import fr.leboncoin.androidrecruitmenttestapp.coreui.theme.MusicTheme
 import fr.leboncoin.androidrecruitmenttestapp.ui.DetailScreen
-import fr.leboncoin.domain.model.Album
 
 @AndroidEntryPoint
 class DetailsActivity : ComponentActivity() {
@@ -25,23 +23,21 @@ class DetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val albumJson = intent.getStringExtra("album")
-        val album = Gson().fromJson(albumJson, Album::class.java)
+        val albumId = intent.getIntExtra("albumId", -1)
 
         //analyticsHelper.initialize(this)
         //analyticsHelper.trackScreenView("Details")
-
         setContent {
             MusicTheme {
-                album?.let {
-                    DetailScreen(albumId = it.id)
-                } ?: run {
-                    Illustration(
+                if (albumId != -1) {
+                    DetailScreen(albumId = albumId)
+                } else {
+                    Box(
                         modifier = Modifier.fillMaxSize(),
-                        painter = painterResource(id = R.drawable.work_in_progress),
-                        contentDescription = null,
-                        contentScale = ContentScale.Inside,
-                    )
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Album introuvable")
+                    }
                 }
             }
         }
