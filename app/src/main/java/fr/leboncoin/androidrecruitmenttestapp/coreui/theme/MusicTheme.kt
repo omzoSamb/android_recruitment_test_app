@@ -2,6 +2,8 @@ package fr.leboncoin.androidrecruitmenttestapp.coreui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.ui.platform.LocalConfiguration
 import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.tokens.darkSparkColors
 import com.adevinta.spark.tokens.lightSparkColors
@@ -33,9 +35,16 @@ fun MusicTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) MusicColorsDark else MusicColorsLight
 
-    SparkTheme(colors = colors) {
-        content()
+    val configuration = LocalConfiguration.current
+    val isDarkMode = isSystemInDarkTheme()
+
+    val finalDarkTheme = darkTheme || isDarkMode
+    val colors = if (finalDarkTheme) MusicColorsDark else MusicColorsLight
+
+    key(configuration.uiMode) {
+        SparkTheme(colors = colors) {
+            content()
+        }
     }
 }
