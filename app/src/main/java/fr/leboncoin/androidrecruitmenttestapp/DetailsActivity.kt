@@ -7,11 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.image.Illustration
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import fr.leboncoin.androidrecruitmenttestapp.ui.AlbumItem
+import fr.leboncoin.androidrecruitmenttestapp.coreui.theme.MusicTheme
 import fr.leboncoin.domain.model.Album
 
 @AndroidEntryPoint
@@ -25,19 +24,16 @@ class DetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val res = intent.getStringExtra("album")
-        val album = Gson().fromJson(res, Album::class.java)
+        val albumJson = intent.getStringExtra("album")
+        val album = Gson().fromJson(albumJson, Album::class.java)
 
         //analyticsHelper.initialize(this)
         //analyticsHelper.trackScreenView("Details")
 
         setContent {
-            SparkTheme {
+            MusicTheme {
                 album?.let {
-                    AlbumItem(
-                        album = it,
-                        onItemSelected = {},
-                    )
+                    DetailScreen(albumId = it.id)
                 } ?: run {
                     Illustration(
                         modifier = Modifier.fillMaxSize(),

@@ -5,9 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.adevinta.spark.SparkTheme
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import fr.leboncoin.androidrecruitmenttestapp.coreui.theme.MusicTheme
 import fr.leboncoin.androidrecruitmenttestapp.ui.AlbumsScreen
 
 @AndroidEntryPoint
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            SparkTheme {
+            MusicTheme {
                 AlbumsScreen(
                     onItemSelected = { album ->
                         val res = Gson().toJson(album)

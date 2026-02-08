@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.adevinta.spark.ExperimentalSparkApi
-import fr.leboncoin.androidrecruitmenttestapp.ui.components.AlbumCard
+import fr.leboncoin.androidrecruitmenttestapp.coreui.components.AlbumCard
 import fr.leboncoin.domain.model.Album
 
 @OptIn(ExperimentalSparkApi::class)
