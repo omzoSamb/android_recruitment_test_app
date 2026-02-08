@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -39,6 +41,7 @@ import coil3.request.crossfade
 import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.icons.Icon
 import com.adevinta.spark.components.text.Text
+import com.adevinta.spark.icons.ArrowLeft
 import com.adevinta.spark.icons.FavoriteFill
 import com.adevinta.spark.icons.FavoriteOutline
 import com.adevinta.spark.icons.SparkIcons
@@ -53,6 +56,7 @@ fun DetailScreen(
     albumId: Int,
     viewModel: DetailViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(albumId) {
@@ -76,7 +80,10 @@ fun DetailScreen(
             is UiState.Success -> {
                 AlbumDetailContent(
                     album = state.data,
-                    onToggleFavorite = { viewModel.toggleFavorite() }
+                    onToggleFavorite = { viewModel.toggleFavorite() },
+                    onBack = {
+                        (context as? android.app.Activity)?.finish()
+                    }
                 )
             }
         }
@@ -87,6 +94,7 @@ fun DetailScreen(
 private fun AlbumDetailContent(
     album: Album,
     onToggleFavorite: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -148,6 +156,29 @@ private fun AlbumDetailContent(
                         .clip(RoundedCornerShape(16.dp)),
                     contentScale = ContentScale.Crop
                 )
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .statusBarsPadding()
+                        .padding(16.dp)
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(SparkTheme.colors.surface.copy(alpha = 0.9f))
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = onBack
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        sparkIcon = SparkIcons.ArrowLeft,
+                        contentDescription = "Retour",
+                        tint = SparkTheme.colors.onSurface,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
 
             Column(
