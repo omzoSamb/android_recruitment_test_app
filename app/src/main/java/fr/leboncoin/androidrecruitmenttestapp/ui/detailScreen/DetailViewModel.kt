@@ -1,4 +1,4 @@
-package fr.leboncoin.androidrecruitmenttestapp
+package fr.leboncoin.androidrecruitmenttestapp.ui.detailScreen
 
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle

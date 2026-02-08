@@ -1,4 +1,4 @@
-package fr.leboncoin.androidrecruitmenttestapp.ui
+package fr.leboncoin.androidrecruitmenttestapp.ui.detailScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,7 +42,6 @@ import com.adevinta.spark.components.text.Text
 import com.adevinta.spark.icons.FavoriteFill
 import com.adevinta.spark.icons.FavoriteOutline
 import com.adevinta.spark.icons.SparkIcons
-import fr.leboncoin.androidrecruitmenttestapp.DetailViewModel
 import fr.leboncoin.androidrecruitmenttestapp.coreui.components.ErrorMessage
 import fr.leboncoin.androidrecruitmenttestapp.coreui.components.LoadingIndicator
 import fr.leboncoin.androidrecruitmenttestapp.utils.UiState
