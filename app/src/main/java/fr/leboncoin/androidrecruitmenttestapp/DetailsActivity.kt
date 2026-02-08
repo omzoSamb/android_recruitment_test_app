@@ -11,6 +11,7 @@ import com.adevinta.spark.components.image.Illustration
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import fr.leboncoin.androidrecruitmenttestapp.coreui.theme.MusicTheme
+import fr.leboncoin.androidrecruitmenttestapp.ui.DetailScreen
 import fr.leboncoin.domain.model.Album
 
 @AndroidEntryPoint

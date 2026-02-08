@@ -1,8 +1,12 @@
 package fr.leboncoin.androidrecruitmenttestapp
 
+import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import fr.leboncoin.androidrecruitmenttestapp.utils.UiState
 import fr.leboncoin.domain.model.Album
 import fr.leboncoin.domain.usecase.GetAlbumByIdUseCase
 import fr.leboncoin.domain.usecase.ToggleFavoriteUseCase
@@ -12,34 +16,31 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class DetailUiState(
-    val album: Album? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
-
 @HiltViewModel
 class DetailViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getAlbumByIdUseCase: GetAlbumByIdUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(DetailUiState(isLoading = true))
-    val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState<Album>>(UiState.Initial)
+    val uiState: StateFlow<UiState<Album>> = _uiState.asStateFlow()
 
     fun loadAlbum(albumId: Int) {
+        savedStateHandle["albumId"] = albumId // Save ID into savedStateHandle
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.value = UiState.Loading
             try {
                 val album = getAlbumByIdUseCase(albumId)
-                _uiState.value = _uiState.value.copy(
-                    album = album,
-                    isLoading = false
-                )
+                if (album != null) {
+                    _uiState.value = UiState.Success(album)
+                } else {
+                    _uiState.value = UiState.Error("Album not found")
+                }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message ?: "Erreur lors du chargement"
+                _uiState.value = UiState.Error(
+                    e.message ?: "Error while loading"
                 )
             }
         }
@@ -47,14 +48,17 @@ class DetailViewModel @Inject constructor(
 
     fun toggleFavorite() {
         viewModelScope.launch {
-            _uiState.value.album?.let { album ->
+            val currentState = _uiState.value
+            if (currentState is UiState.Success) {
                 try {
-                    val newFavoriteStatus = toggleFavoriteUseCase(album.id)
-                    _uiState.value = _uiState.value.copy(
-                        album = album.copy(isFavorite = newFavoriteStatus)
+                    val newFavoriteStatus = toggleFavoriteUseCase(currentState.data.id)
+                    _uiState.value = UiState.Success(
+                        currentState.data.copy(isFavorite = newFavoriteStatus)
                     )
                 } catch (e: Exception) {
-                    // Handle error
+                    _uiState.value = UiState.Error(
+                        e.message ?: "Error during update"
+                    )
                 }
             }
         }

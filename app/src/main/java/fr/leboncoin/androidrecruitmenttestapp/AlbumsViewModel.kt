@@ -1,8 +1,12 @@
 package fr.leboncoin.androidrecruitmenttestapp
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import fr.leboncoin.androidrecruitmenttestapp.utils.UiState
+import fr.leboncoin.domain.model.Album
 import fr.leboncoin.domain.usecase.GetAllAlbumsUseCase
 import fr.leboncoin.domain.usecase.RefreshAlbumsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,20 +16,15 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class AlbumsUiState(
-    val albums: List<fr.leboncoin.domain.model.Album> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
-
 @HiltViewModel
 class AlbumsViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getAllAlbumsUseCase: GetAllAlbumsUseCase,
     private val refreshAlbumsUseCase: RefreshAlbumsUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AlbumsUiState(isLoading = true))
-    val uiState: StateFlow<AlbumsUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState<List<Album>>>(UiState.Initial)
+    val uiState: StateFlow<UiState<List<Album>>> = _uiState.asStateFlow()
 
     init {
         loadAlbums()
@@ -35,38 +34,36 @@ class AlbumsViewModel @Inject constructor(
         viewModelScope.launch {
             getAllAlbumsUseCase()
                 .catch { e ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = e.message ?: "Une erreur est survenue"
+                    _uiState.value = UiState.Error(
+                        e.message ?: "Error occurred"
                     )
                 }
                 .collect { albums ->
-                    _uiState.value = _uiState.value.copy(
-                        albums = albums,
-                        isLoading = false
-                    )
+                    _uiState.value = when {
+                        albums.isEmpty() -> UiState.Success(emptyList())
+                        else -> UiState.Success(albums)
+                    }
                 }
         }
 
-        // Charger les données depuis l'API
+        // Load data from the API in the background
         viewModelScope.launch {
             try {
                 refreshAlbumsUseCase()
             } catch (e: Exception) {
-                // L'erreur sera gérée par le Flow ci-dessus
+                // The error will be handled by the above Flow.
             }
         }
     }
 
     fun refresh() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.value = UiState.Loading
             try {
                 refreshAlbumsUseCase()
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message ?: "Erreur lors du rafraîchissement"
+                _uiState.value = UiState.Error(
+                    e.message ?: "Error during refresh"
                 )
             }
         }
