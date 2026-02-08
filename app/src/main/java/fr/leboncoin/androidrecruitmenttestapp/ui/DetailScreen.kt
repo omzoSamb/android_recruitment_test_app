@@ -1,4 +1,4 @@
-package fr.leboncoin.androidrecruitmenttestapp
+package fr.leboncoin.androidrecruitmenttestapp.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +39,8 @@ import com.adevinta.spark.components.scaffold.Scaffold
 import com.adevinta.spark.icons.FavoriteFill
 import com.adevinta.spark.icons.FavoriteOutline
 import com.adevinta.spark.icons.SparkIcons
+import fr.leboncoin.androidrecruitmenttestapp.DetailViewModel
+import fr.leboncoin.androidrecruitmenttestapp.utils.UiState
 import fr.leboncoin.domain.model.Album
 
 @Composable
@@ -54,8 +56,8 @@ fun DetailScreen(
     }
 
     Scaffold(modifier = modifier) { paddingValues ->
-        when {
-            uiState.isLoading -> {
+        when (val state = uiState) {
+            is UiState.Initial -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -66,7 +68,18 @@ fun DetailScreen(
                 }
             }
 
-            uiState.error != null -> {
+            is UiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Spinner()
+                }
+            }
+
+            is UiState.Error -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -74,16 +87,16 @@ fun DetailScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = uiState.error ?: "Erreur",
+                        text = state.message,
                         style = SparkTheme.typography.body1,
                         color = SparkTheme.colors.onSurface
                     )
                 }
             }
 
-            uiState.album != null -> {
+            is UiState.Success -> {
                 AlbumDetailContent(
-                    album = uiState.album!!,
+                    album = state.data,
                     onToggleFavorite = { viewModel.toggleFavorite() },
                     modifier = Modifier.padding(paddingValues)
                 )
