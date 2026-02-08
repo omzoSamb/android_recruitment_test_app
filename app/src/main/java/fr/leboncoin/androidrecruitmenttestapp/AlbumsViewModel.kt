@@ -1,62 +1,74 @@
 package fr.leboncoin.androidrecruitmenttestapp
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import fr.leboncoin.data.network.model.AlbumDto
-import fr.leboncoin.data.repository.AlbumRepository
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
+import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.leboncoin.domain.usecase.GetAllAlbumsUseCase
+import fr.leboncoin.domain.usecase.RefreshAlbumsUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@OptIn(DelicateCoroutinesApi::class)
-class AlbumsViewModel(
-    private val repository: AlbumRepository,
+data class AlbumsUiState(
+    val albums: List<fr.leboncoin.domain.model.Album> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
+@HiltViewModel
+class AlbumsViewModel @Inject constructor(
+    private val getAllAlbumsUseCase: GetAllAlbumsUseCase,
+    private val refreshAlbumsUseCase: RefreshAlbumsUseCase
 ) : ViewModel() {
 
-    val albums: StateFlow<List<AlbumDto>> = repository.albums
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000), // Reste actif 5s après que l'UI n'écoute plus
-            initialValue = emptyList() // Valeur initiale en attendant la première émission
-        )
+    private val _uiState = MutableStateFlow(AlbumsUiState(isLoading = true))
+    val uiState: StateFlow<AlbumsUiState> = _uiState.asStateFlow()
 
     init {
-        // Charger les données dès que le ViewModel est créé
         loadAlbums()
     }
 
-    /*fun loadAlbums() {
-        GlobalScope.launch {
-            try {
-                _albums.emit(repository.getAllAlbums())
-            } catch (_: Exception) { /* TODO: Handle errors */ }
-        }
-    }*/
-
-
-
     private fun loadAlbums() {
-        // On utilise viewModelScope, qui est lié au cycle de vie du ViewModel [11]
+        viewModelScope.launch {
+            getAllAlbumsUseCase()
+                .catch { e ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = e.message ?: "Une erreur est survenue"
+                    )
+                }
+                .collect { albums ->
+                    _uiState.value = _uiState.value.copy(
+                        albums = albums,
+                        isLoading = false
+                    )
+                }
+        }
+
+        // Charger les données depuis l'API
         viewModelScope.launch {
             try {
-                repository.getAllAlbums()
-            } catch (_: Exception) { /* TODO: Gérer les erreurs, ex: via un autre Flow pour l'UI */ }
+                refreshAlbumsUseCase()
+            } catch (e: Exception) {
+                // L'erreur sera gérée par le Flow ci-dessus
+            }
         }
     }
 
-    class Factory(
-        private val repository: AlbumRepository,
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return AlbumsViewModel(repository) as T
+    fun refresh() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            try {
+                refreshAlbumsUseCase()
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message ?: "Erreur lors du rafraîchissement"
+                )
+            }
         }
     }
 }

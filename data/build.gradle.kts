@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -54,6 +55,9 @@ android {
 
         implementation(libs.kotlinx.coroutines.core)
         implementation(libs.kotlinx.coroutines.android)
+
+        implementation(libs.hilt)
+        ksp(libs.hilt.compiler)
 
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit) // Useless dependency
