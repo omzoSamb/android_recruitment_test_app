@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import com.adevinta.spark.components.text.Text
 import dagger.hilt.android.AndroidEntryPoint
 import fr.leboncoin.androidrecruitmenttestapp.coreui.theme.MusicTheme
-import fr.leboncoin.androidrecruitmenttestapp.ui.DetailScreen
+import fr.leboncoin.androidrecruitmenttestapp.ui.detailScreen.DetailScreen
 
 @AndroidEntryPoint
 class DetailsActivity : ComponentActivity() {
