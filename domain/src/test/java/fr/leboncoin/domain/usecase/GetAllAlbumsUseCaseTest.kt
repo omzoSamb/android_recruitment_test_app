@@ -22,7 +22,7 @@ class GetAllAlbumsUseCaseTest {
     }
 
     @Test
-    fun `invoke should return flow of albums from repository`() = runTest {
+    fun invoke_should_return_flow_of_albums_from_repository() = runTest {
         // Given
         val albums = listOf(
             Album(1, 1, "Album 1", "url1", "thumb1", false),

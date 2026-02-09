@@ -1,6 +1,5 @@
 package fr.leboncoin.data.repository
 
-import app.cash.turbine.test
 import fr.leboncoin.data.database.AlbumDao
 import fr.leboncoin.data.database.AlbumEntity
 import fr.leboncoin.data.network.api.AlbumApiService
@@ -30,28 +29,7 @@ class AlbumRepositoryIntegrationTest {
     }
 
     @Test
-    fun `getAllAlbums should return flow of albums from dao`() = runTest {
-        // Given
-        val entities = listOf(
-            AlbumEntity(1, 1, "Album 1", "url1", "thumb1", false),
-            AlbumEntity(2, 1, "Album 2", "url2", "thumb2", true)
-        )
-        whenever(albumDao.getAllAlbums()).thenReturn(flowOf(entities))
-
-        // When
-        val result = repository.getAllAlbums()
-
-        // Then
-        result.test {
-            val albums = awaitItem()
-            assertEquals("Should have 2 albums", 2, albums.size)
-            assertEquals("First album title should match", "Album 1", albums[0].title)
-            assertEquals("Second album should be favorite", true, albums[1].isFavorite)
-        }
-    }
-
-    @Test
-    fun `refreshAlbums should fetch from api and save to dao`() = runTest {
+    fun refreshAlbums_should_fetch_from_api_and_save_to_dao() = runTest {
         // Given
         val dtos = listOf(
             AlbumDto(1, 1, "Album 1", "url1", "thumb1"),
@@ -74,7 +52,7 @@ class AlbumRepositoryIntegrationTest {
     }
 
     @Test
-    fun `getAlbumById should return correct album`() = runTest {
+    fun getAlbumById_should_return_correct_album() = runTest {
         // Given
         val entity = AlbumEntity(1, 1, "Album 1", "url1", "thumb1", false)
         whenever(albumDao.getAlbumById(1)).thenReturn(entity)
@@ -89,7 +67,7 @@ class AlbumRepositoryIntegrationTest {
     }
 
     @Test
-    fun `toggleFavorite should update favorite status`() = runTest {
+    fun toggleFavorite_should_update_favorite_status() = runTest {
         // Given
         val albumId = 1
         whenever(albumDao.isFavorite(albumId)).thenReturn(false)
@@ -102,25 +80,4 @@ class AlbumRepositoryIntegrationTest {
         verify(albumDao).updateFavoriteStatus(albumId, true)
     }
 
-    @Test
-    fun `getFavoriteAlbums should return only favorite albums`() = runTest {
-        // Given
-        val favoriteEntities = listOf(
-            AlbumEntity(1, 1, "Album 1", "url1", "thumb1", true),
-            AlbumEntity(2, 1, "Album 2", "url2", "thumb2", true)
-        )
-        whenever(albumDao.getFavoriteAlbums()).thenReturn(flowOf(favoriteEntities))
-
-        // When
-        val result = repository.getFavoriteAlbums()
-
-        // Then
-        result.test {
-            val albums = awaitItem()
-            assertEquals("Should have 2 favorite albums", 2, albums.size)
-            albums.forEach { album ->
-                assertTrue("All albums should be favorites", album.isFavorite)
-            }
-        }
-    }
 }

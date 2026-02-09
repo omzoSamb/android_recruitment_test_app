@@ -366,33 +366,6 @@ Quand le `_uiState` change dans le ViewModel, le Composable se recompose automat
 
 ## Tests
 
-### Turbine
-
-**Pourquoi Turbine ?**
-
-Turbine est une bibliothèque spécialement conçue pour tester les Flow de manière réactive et
-intuitive
-
-**Avantages :**
-
-- API simple : API très simple pour tester les Flow
-- Assertions réactives : permet d'attendre et d'assertionner les valeurs émises par les Flow
-- Timeouts : support des timeouts pour éviter les tests qui bloquent indéfiniment
-
-**Utilisation dans le projet :**
-
-Les tests de ViewModel utilisent Turbine pour tester les StateFlow :
-
-```kotlin
-viewModel.uiState.test {
-    val initialState = awaitItem()
-    assertTrue(initialState is UiState.Initial)
-
-    val successState = awaitItem()
-    assertTrue(successState is UiState.Success)
-}
-```
-
 ### Mockito
 
 **Pourquoi Mockito ?**
@@ -407,9 +380,43 @@ de simuler des dépendances pour isoler les unités testées.
 
 **Utilisation dans le projet :**
 
-Les Use Cases sont mockés dans les tests de ViewModel :
+Les Use Cases sont mockés dans les tests de ViewModel et les tests des Use Cases mockent le
+Repository :
 
 ```kotlin
+// Dans les tests ViewModel
 val getAllAlbumsUseCase = mock<GetAllAlbumsUseCase>()
 whenever(getAllAlbumsUseCase()).thenReturn(flowOf(albums))
+
+// Dans les tests Use Cases
+val repository = mock<AlbumRepository>()
+whenever(repository.getAllAlbums()).thenReturn(flowOf(albums))
+```
+
+### Kotlinx Coroutines Test
+
+**Pourquoi Kotlinx Coroutines Test ?**
+
+Kotlinx Coroutines Test fournit des utilitaires pour tester le code asynchrone basé sur les
+coroutines
+
+**Avantages :**
+
+- Scope de test : `runTest` fournit un scope de coroutines de test qui permet de tester le code
+  asynchrone de manière synchrone
+- Contrôle du temps : permet de contrôler le temps virtuel pour les tests
+- Intégration : s'intègre parfaitement avec les ViewModels et les Use Cases qui utilisent des
+  coroutines
+
+**Utilisation dans le projet :**
+
+Tous les tests qui utilisent des coroutines utilisent `runTest` :
+
+```kotlin
+@Test
+fun testAsyncOperation() = runTest {
+    // Code de test avec coroutines
+    val result = useCase()
+    assertEquals(expected, result)
+}
 ```
