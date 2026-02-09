@@ -60,11 +60,8 @@ android {
         ksp(libs.hilt.compiler)
 
         testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.turbine)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
-        androidTestImplementation(libs.androidx.junit) // Useless dependency
-        androidTestImplementation(libs.androidx.espresso.core) // Useless dependency
+        testImplementation(libs.kotlinx.coroutines.test)
+        testImplementation(libs.mockito.core)
+        testImplementation(libs.mockito.kotlin)
     }
 }

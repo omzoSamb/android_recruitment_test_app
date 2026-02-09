@@ -10,7 +10,7 @@ import org.junit.Test
 class AlbumDataStructureTest {
 
     @Test
-    fun `album should have all required fields`() {
+    fun album_should_have_all_required_fields() {
         // Given & When
         val album = Album(
             id = 1,
@@ -31,7 +31,7 @@ class AlbumDataStructureTest {
     }
 
     @Test
-    fun `album list should contain valid albums`() {
+    fun album_list_should_contain_valid_albums() {
         // Given
         val albums = listOf(
             Album(1, 1, "Album 1", "url1", "thumb1", false),
@@ -50,7 +50,7 @@ class AlbumDataStructureTest {
     }
 
     @Test
-    fun `album data should match expected structure`() {
+    fun album_data_should_match_expected_structure() {
         // Given
         val expectedId = 123
         val expectedAlbumId = 456
@@ -79,7 +79,7 @@ class AlbumDataStructureTest {
     }
 
     @Test
-    fun `album list should return correct number of items`() {
+    fun album_list_should_return_correct_number_of_items() {
         // Given
         val albums = (1..10).map {
             Album(it, 1, "Album $it", "url$it", "thumb$it", false)
@@ -92,7 +92,7 @@ class AlbumDataStructureTest {
     }
 
     @Test
-    fun `album should handle favorite status correctly`() {
+    fun album_should_handle_favorite_status_correctly() {
         // Given
         val albumNotFavorite = Album(1, 1, "Album", "url", "thumb", false)
         val albumFavorite = Album(2, 1, "Album", "url", "thumb", true)
@@ -103,7 +103,7 @@ class AlbumDataStructureTest {
     }
 
     @Test
-    fun `album should have valid URL format`() {
+    fun album_should_have_valid_URL_format() {
         // Given
         val albums = listOf(
             Album(1, 1, "Album 1", "https://example.com/image1.jpg", "https://example.com/thumb1.jpg", false),

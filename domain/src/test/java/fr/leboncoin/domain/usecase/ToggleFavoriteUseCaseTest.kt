@@ -21,7 +21,7 @@ class ToggleFavoriteUseCaseTest {
     }
 
     @Test
-    fun `invoke should return true when album is added to favorites`() = runTest {
+    fun invoke_should_return_true_when_album_is_added_to_favorites() = runTest {
         // Given
         val albumId = 1
         whenever(repository.toggleFavorite(albumId)).thenReturn(true)
@@ -34,7 +34,7 @@ class ToggleFavoriteUseCaseTest {
     }
 
     @Test
-    fun `invoke should return false when album is removed from favorites`() = runTest {
+    fun invoke_should_return_false_when_album_is_removed_from_favorites() = runTest {
         // Given
         val albumId = 1
         whenever(repository.toggleFavorite(albumId)).thenReturn(false)
